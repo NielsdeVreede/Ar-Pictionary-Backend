@@ -16,10 +16,20 @@ export class AppGateway {
   @WebSocketServer()
   server: Server;
 
-  clients: Map<Socket, string>;
-  anchors: GameData[];
-  hostClient: Socket;
-  gameConfig: GameConfig;
+  queue: Socket[]
+  activeGames: GameConfig[]
+
+  @SubscribeMessage('join')
+  handle_search_opponent(client: Socket, payload: any) {
+    if(this.queue.length > 0){
+      const opponent = this.queue[0]
+      this.activeGames.push(this.appService.createNewGame([client, opponent]));
+      this.queue.shift()
+    }
+    else{
+      this.queue.push(client)
+    }
+  }
 
   @SubscribeMessage('join')
   handle_join(client: Socket, payload: any) {
