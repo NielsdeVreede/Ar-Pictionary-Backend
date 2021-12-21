@@ -9,6 +9,7 @@ export default class GameConfig {
   guessableWord: string;
   currentPlayerTurn: Socket
   players: Socket[];
+  anchors: any[] = []
 
   constructor(gameID: string, guessableWord: string, currentPlayerTurn: Socket, players: Socket[]){
     this.gameID = gameID
