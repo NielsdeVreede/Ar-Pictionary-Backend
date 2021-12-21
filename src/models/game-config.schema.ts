@@ -1,5 +1,10 @@
 import { Socket } from 'net';
 
+export type player = {
+  client: Socket,
+  name: string;
+}
+
 export default class GameConfig {
   gameID: string;
   timeLimitInSeconds: number = 15;
@@ -8,10 +13,10 @@ export default class GameConfig {
   guesses: string[] = [];
   guessableWord: string;
   currentPlayerTurn: Socket
-  players: Socket[];
+  players: player[];
   anchors: any[] = []
 
-  constructor(gameID: string, guessableWord: string, currentPlayerTurn: Socket, players: Socket[]){
+  constructor(gameID: string, guessableWord: string, currentPlayerTurn: Socket, players: player[]){
     this.gameID = gameID
     this.guessableWord = guessableWord
     this.currentPlayerTurn = currentPlayerTurn

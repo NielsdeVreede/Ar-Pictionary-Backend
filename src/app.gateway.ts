@@ -6,7 +6,7 @@ import {
 import { Socket } from 'net';
 import { Server } from 'socket.io';
 import { AppService } from './app.service';
-import GameConfig from './models/game-config.schema';
+import GameConfig, { player } from './models/game-config.schema';
 import GameData from './models/game-data.schema';
 
 @WebSocketGateway()
@@ -16,18 +16,18 @@ export class AppGateway {
   @WebSocketServer()
   server: Server;
 
-  queue: Socket[]
+  queue: player[]
   activeGames: GameConfig[]
 
   @SubscribeMessage('search_opponent')
-  handle_search_opponent(client: Socket, payload: any) {
+  handle_search_opponent(client: Socket, payload: string) {
     if(this.queue.length > 0){
       const opponent = this.queue[0]
-      this.activeGames.push(this.appService.createNewGame([client, opponent]));
+      this.activeGames.push(this.appService.createNewGame([{client: client, name: payload}, opponent]))
       this.queue.shift()
     }
     else{
-      this.queue.push(client)
+      this.queue.push({client: client, name: payload})
     }
   }
 

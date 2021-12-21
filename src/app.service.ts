@@ -22,9 +22,9 @@ export class AppService {
     }
   }
 
-  createNewGame(clients){
+  createNewGame(players){
     //Replace "Boerderij with random word from list of words"
-    const randomStarter = clients[Math.floor(Math.random()*clients.length)];
-    return new GameConfig(uuid(), "Boerderij", randomStarter, clients)
+    const randomStarter = players[Math.floor(Math.random()*players.length)];
+    return new GameConfig(uuid(), "Boerderij", randomStarter, players)
   }
 }
