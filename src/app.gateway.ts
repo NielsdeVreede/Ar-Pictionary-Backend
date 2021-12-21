@@ -6,6 +6,8 @@ import {
 import { Socket } from 'net';
 import { Server } from 'socket.io';
 import { AppService } from './app.service';
+import GameConfig from './models/game-config.schema';
+import GameData from './models/game-data.schema';
 
 @WebSocketGateway()
 export class AppGateway {

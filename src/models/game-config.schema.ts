@@ -1,4 +1,4 @@
-class GameConfig {
+export default class GameConfig {
   word: string;
   timeLimitInSeconds: number;
   started: boolean;

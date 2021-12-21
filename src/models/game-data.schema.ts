@@ -1,4 +1,4 @@
-class GameData {
+export default class GameData {
   anchor: any;
   timeRemaining: number;
 }
