@@ -16,30 +16,34 @@ export class AppGateway {
   @WebSocketServer()
   server: Server;
 
-  queue: player[]
-  activeGames: GameConfig[]
+  queue: player[];
+  activeGames: GameConfig[];
 
   @SubscribeMessage('search_opponent')
   handle_search_opponent(client: Socket, payload: string) {
-    if(this.queue.length > 0){
-      const opponent = this.queue[0]
-      this.activeGames.push(this.appService.createNewGame([{client: client, name: payload}, opponent]))
-      this.queue.shift()
-    }
-    else{
-      this.queue.push({client: client, name: payload})
+    if (this.queue.length > 0) {
+      const opponent = this.queue[0];
+      const players = [
+        { client: client, name: payload },
+        opponent,
+      ]
+      const gameConfig = this.appService.createNewGame(players)
+      this.activeGames.push(gameConfig);
+
+      this.appService.broadcastMessage(
+        players,
+        'game_created',
+        gameConfig
+      );
+
+      this.queue.shift();
+    } else {
+      this.queue.push({ client: client, name: payload });
     }
   }
 
   @SubscribeMessage('leave')
-  handle_leave(client: Socket) {
-
-  }
-
-  @SubscribeMessage('start_game')
-  handle_start_game(client: Socket, payload: GameConfig) {
-    
-  }
+  handle_leave(client: Socket) {}
 
   @SubscribeMessage('new_anchor')
   handle_new_anchor(client: Socket, payload: GameData) {
