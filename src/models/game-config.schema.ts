@@ -1,9 +1,10 @@
-import { Socket } from 'net';
+import { Socket } from 'socket.io';
 
 export type player = {
-  client: Socket,
+  client: Socket;
   name: string;
-}
+  id: string;
+};
 
 export default class GameConfig {
   gameID: string;
@@ -12,14 +13,33 @@ export default class GameConfig {
   started: boolean = false;
   guesses: string[] = [];
   guessableWord: string;
-  currentPlayerTurn: Socket
+  currentPlayerTurn: string;
   players: player[];
-  anchors: any[] = []
+  anchors: any[] = [];
 
-  constructor(gameID: string, guessableWord: string, currentPlayerTurn: Socket, players: player[]){
-    this.gameID = gameID
-    this.guessableWord = guessableWord
-    this.currentPlayerTurn = currentPlayerTurn
-    this.players = players
+  constructor(
+    gameID: string,
+    guessableWord: string,
+    currentPlayerTurn: string,
+    players: player[],
+  ) {
+    this.gameID = gameID;
+    this.guessableWord = guessableWord;
+    this.currentPlayerTurn = currentPlayerTurn;
+    this.players = players;
+  }
+
+  getInitValues() {
+    return {
+      gameID: this.gameID,
+      timeLimitInSeconds: this.timeLimitInSeconds,
+      timeRemaining: this.timeRemaining,
+      started: this.started,
+      guesses: this.guesses,
+      guessableWord: this.guessableWord,
+      currentPlayerTurn: this.currentPlayerTurn,
+      players: [this.players[0].id, this.players[1].id],
+      anchors: this.anchors,
+    };
   }
 }

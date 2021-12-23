@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Socket } from 'net';
-import GameConfig, { player } from './models/game-config.schema';
-import { v4 as uuid } from 'uuid';
+import { player } from './models/game-config.schema';
 
 @Injectable()
 export class AppService {
@@ -9,15 +7,9 @@ export class AppService {
     return 'Pictionary backend';
   }
 
-  broadcastMessage(players: player[], header: string, payload: any) {
+  broadcastMessage(players: player[], event: string, payload: any) {
     players.forEach(player => {
-      player.client.emit(header, payload)
+      player.client.emit(event, payload)
     });
-  }
-
-  createNewGame(players) {
-    //Replace "Boerderij with random word from list of words"
-    const randomStarter = players[Math.floor(Math.random() * players.length)];
-    return new GameConfig(uuid(), 'Boerderij', randomStarter, players);
   }
 }

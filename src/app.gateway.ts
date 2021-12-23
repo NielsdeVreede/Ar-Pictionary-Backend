@@ -1,44 +1,64 @@
 import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket } from 'net';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { AppService } from './app.service';
+import { GameService } from './game.service';
 import GameConfig, { player } from './models/game-config.schema';
 import GameData from './models/game-data.schema';
 
-@WebSocketGateway()
-export class AppGateway {
-  constructor(private readonly appService: AppService) {}
+@WebSocketGateway(80)
+export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  queue: player[];
+  activeGames: GameConfig[];
+
+  constructor(
+    private readonly appService: AppService,
+    private readonly gameService: GameService,
+  ) {
+    this.queue = [];
+    this.activeGames = [];
+  }
 
   @WebSocketServer()
   server: Server;
 
-  queue: player[];
-  activeGames: GameConfig[];
+  handleConnection() {
+    console.log('New client is connected');
+  }
+
+  handleDisconnect(client) {
+    this.queue.forEach((player, index) => {
+      if (player.client.id === client.id) {
+        this.queue.splice(index, 1);
+      }
+    });
+  }
 
   @SubscribeMessage('search_opponent')
-  handle_search_opponent(client: Socket, payload: string) {
+  handle_search_opponent(client: Socket, payload: any[]) {
     if (this.queue.length > 0) {
       const opponent = this.queue[0];
       const players = [
-        { client: client, name: payload },
+        { client: client, name: payload[0], id: payload[1] },
         opponent,
-      ]
-      const gameConfig = this.appService.createNewGame(players)
-      this.activeGames.push(gameConfig);
+      ];
+      const gameConfig = this.gameService.createNewGame(players);
 
+      this.activeGames.push(gameConfig);
       this.appService.broadcastMessage(
         players,
         'game_created',
-        gameConfig
+        gameConfig.getInitValues(),
       );
 
       this.queue.shift();
     } else {
-      this.queue.push({ client: client, name: payload });
+      this.queue.push({ client: client, name: payload[0], id: payload[1] });
     }
   }
 
