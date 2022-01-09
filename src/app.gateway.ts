@@ -34,9 +34,20 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (player.client.id === client.id) {
         this.queue.splice(index, 1);
         console.log("Client deleted from queue");
-        
       }
     });
+    
+    this.activeGames.forEach((game, index) =>{
+      if(game.players[0].client.id === client.id || game.players[1].client.id === client.id){
+        this.appService.broadcastMessage(
+          game.players,
+          'game_deleted',
+          true
+        );
+
+        this.activeGames.splice(index, 1)
+      }
+    })
   }
 
   @SubscribeMessage('search_opponent')
@@ -54,7 +65,17 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
         players,
         'game_created',
         gameConfig.getInitValues(),
+        true
       );
+
+      setInterval(() => {
+        gameConfig.timeRemaining -= 1
+        this.appService.broadcastMessage(
+          players,
+          'time_decrease',
+          gameConfig.timeRemaining
+        );
+      }, 1000);
 
       this.queue.shift();
     } else {
