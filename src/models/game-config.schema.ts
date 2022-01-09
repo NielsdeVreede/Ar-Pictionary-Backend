@@ -38,7 +38,7 @@ export default class GameConfig {
       guesses: this.guesses,
       guessableWord: this.guessableWord,
       currentPlayerTurn: this.currentPlayerTurn,
-      players: [this.players[0].id, this.players[1].id],
+      players: [{id: this.players[0].id, name: this.players[0].name}, {id: this.players[1].id, name: this.players[1].name}],
       anchors: this.anchors,
     };
   }

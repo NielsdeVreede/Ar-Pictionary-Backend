@@ -9,7 +9,7 @@ export class AppService {
 
   broadcastMessage(players: player[], event: string, payload: any) {
     players.forEach(player => {
-      player.client.emit(event, payload)
+      player.client.emit(event, JSON.stringify(payload))
     });
   }
 }

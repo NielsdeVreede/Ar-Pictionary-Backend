@@ -27,14 +27,14 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  handleConnection() {
-    console.log('New client is connected');
-  }
+  handleConnection() {}
 
   handleDisconnect(client) {
     this.queue.forEach((player, index) => {
       if (player.client.id === client.id) {
         this.queue.splice(index, 1);
+        console.log("Client deleted from queue");
+        
       }
     });
   }
@@ -59,6 +59,8 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.queue.shift();
     } else {
       this.queue.push({ client: client, name: payload[0], id: payload[1] });
+      console.log('Client added to queue');
+      
     }
   }
 
