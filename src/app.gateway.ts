@@ -36,7 +36,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log("Client deleted from queue");
       }
     });
-    
+
     this.activeGames.forEach((game, index) =>{
       if(game.players[0].client.id === client.id || game.players[1].client.id === client.id){
         this.appService.broadcastMessage(
@@ -46,6 +46,8 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
         );
 
         this.activeGames.splice(index, 1)
+        console.log("Delete game");
+        
       }
     })
   }
@@ -68,13 +70,24 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
         true
       );
 
-      setInterval(() => {
-        gameConfig.timeRemaining -= 1
-        this.appService.broadcastMessage(
-          players,
-          'time_decrease',
-          gameConfig.timeRemaining
-        );
+      const timeDecreaser = setInterval(() => {
+        if(gameConfig.timeRemaining > 0){
+          gameConfig.timeRemaining -= 1
+          this.appService.broadcastMessage(
+            players,
+            'time_decrease',
+            gameConfig.timeRemaining
+          );
+        }
+        else{
+          clearInterval(timeDecreaser)
+          this.appService.broadcastMessage(
+            players,
+            'time_is_up',
+            gameConfig.timeRemaining
+          );
+
+        }
       }, 1000);
 
       this.queue.shift();
