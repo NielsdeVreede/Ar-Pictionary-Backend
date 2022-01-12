@@ -11,7 +11,7 @@ import { GameService } from './game.service';
 import GameConfig, { player } from './models/game-config.schema';
 import GameData from './models/game-data.schema';
 
-@WebSocketGateway(80)
+@WebSocketGateway(1080)
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   queue: player[];
   activeGames: GameConfig[];
